@@ -1,23 +1,33 @@
-from pytest_bdd import scenario, given, when, then
-
+from pytest_bdd import scenarios, parsers, given, when, then
+from functools import partial
 from cucumbers import CucumberBasket
 
 
-@scenario('../features/cucumbers.feature', 'Add cucumbers to a basket')
-def test_add():
-    pass
+scenarios('../features/cucumbers.feature')
 
 
-@given("the basket has 2 cucumbers", target_fixture='basket')
-def basket():
-    return CucumberBasket(initial_count=2)
+EXTRA_TYPES = {
+    'Number': int,
+}
+
+parse_num = partial(parsers.cfparse, extra_types=EXTRA_TYPES)
 
 
-@when("4 cucumbers are added to the basket")
-def add_cucumbers(basket):
-    basket.add(4)
+@given(parse_num('the basket has "{initial:Number}" cucumbers'))
+def basket(initial):
+    return CucumberBasket(initial_count=initial)
 
 
-@then("the basket contains 6 cucumbers")
-def basket_has_total(basket):
-    assert basket.count == 6
+@when(parse_num('"{some:Number}" cucumbers are added to the basket'))
+def add_cucumbers(basket, some):
+    basket.add(some)
+
+
+@when(parse_num('"{some:Number}" cucumbers are removed from the basket'))
+def remove_cucumbers(basket, some):
+    basket.remove(some)
+
+
+@then(parse_num('the basket contains "{total:Number}" cucumbers'))
+def basket_has_total(basket, total):
+    assert basket.count == total
