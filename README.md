@@ -4,3 +4,5 @@ Behavior Driven Python with pytest-bdd
 * Creating stubs
 * Running Test file in pipenv
 * Parameterizing Steps
+* Adding Scenario Outlines
+* REST API Tests
